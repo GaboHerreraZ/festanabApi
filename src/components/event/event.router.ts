@@ -4,6 +4,7 @@ import {
   getEvents,
   addEditEvent,
   getTotalsByEventId,
+  getEventById,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -26,6 +27,8 @@ import {
 const eventRouter: Router = Router();
 
 eventRouter.get("/get-events", verifyToken, getEvents);
+eventRouter.get("/get-event-by-id/:id", verifyToken, getEventById);
+
 eventRouter.post("/add-edit-event", verifyToken, addEditEvent);
 
 eventRouter.get("/event-detail/:eventId", verifyToken, getEventDetail);

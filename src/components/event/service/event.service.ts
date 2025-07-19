@@ -4,6 +4,10 @@ import { IEvent, Event } from "../model/event.model";
 import { Bill } from "../model/bill.model";
 import { Hour } from "../model/hour.model";
 
+const getEventId = async (eventId: string) => {
+  return await Event.findById(eventId);
+};
+
 const getAllEvent = async () => {
   return await Event.find();
 };
@@ -14,7 +18,9 @@ const addNewEvent = async (
   owner: string,
   phoneNumber: string,
   date: Date,
-  time: Date
+  time: Date,
+  location: string,
+  nit: string
 ) => {
   const newEvent = new Event({
     name,
@@ -23,6 +29,8 @@ const addNewEvent = async (
     phoneNumber,
     date,
     time,
+    location,
+    nit,
   });
   return await newEvent.save();
 };
@@ -86,4 +94,4 @@ const getTotalsByEvent = async (eventId: string) => {
   };
 };
 
-export { getAllEvent, addNewEvent, updateEvent, getTotalsByEvent };
+export { getAllEvent, addNewEvent, updateEvent, getTotalsByEvent, getEventId };

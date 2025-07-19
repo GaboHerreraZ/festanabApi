@@ -31,9 +31,9 @@ const BillSchema: Schema<IBill> = new Schema({
     enum: ["Bancolombia", "Nequi", null],
     default: null,
   },
-  observations: { type: String, required: true },
-  conciliation: { type: Boolean, required: true, default: false },
-  billType: { type: String, required: true },
+  observations: { type: String, required: false },
+  conciliation: { type: Boolean, required: false, default: false },
+  billType: { type: String, required: false },
 });
 
 export const Bill = mongoose.model<IBill>("Bill", BillSchema);

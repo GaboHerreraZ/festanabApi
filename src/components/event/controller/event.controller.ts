@@ -3,9 +3,23 @@ import {
   addNewEvent,
   getAllEvent,
   updateEvent,
+  getEventId,
   getTotalsByEvent,
 } from "../service/event.service";
 import { IEvent } from "../model/event.model";
+
+const getEventById = async (_: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = _.params;
+    const event = await getEventId(id);
+
+    res.status(201).json({
+      data: event,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getEvents = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -25,16 +39,18 @@ const addEditEvent = async (
   next: NextFunction
 ) => {
   try {
-    const { _id, name, description, owner, phoneNumber, date, time } = req.body;
+    const { _id, ...rest } = req.body;
 
     if (!_id) {
       const newItem = await addNewEvent(
-        name,
-        description,
-        owner,
-        phoneNumber,
-        date,
-        time
+        rest.name,
+        rest.description,
+        rest.owner,
+        rest.phoneNumber,
+        rest.date,
+        rest.time,
+        rest.location,
+        rest.nit
       );
       res.status(201).json({
         data: newItem,
@@ -45,12 +61,14 @@ const addEditEvent = async (
 
     const event = {
       _id,
-      name,
-      description,
-      owner,
-      phoneNumber,
-      date,
-      time,
+      name: rest.name,
+      description: rest.description,
+      owner: rest.owner,
+      phoneNumber: rest.phoneNumber,
+      date: rest.date,
+      time: rest.time,
+      location: rest.location,
+      nit: rest.nit,
     } as IEvent;
 
     const editItem = await updateEvent(event);
@@ -79,4 +97,4 @@ const getTotalsByEventId = async (
   }
 };
 
-export { getEvents, addEditEvent, getTotalsByEventId };
+export { getEvents, addEditEvent, getTotalsByEventId, getEventById };

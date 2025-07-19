@@ -51,6 +51,7 @@ const getEventDetailByEventId = async (eventId: string) => {
             {
               _id: new mongoose.Types.ObjectId(),
               description: "Transporte",
+              name: "Transporte",
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
@@ -58,6 +59,7 @@ const getEventDetailByEventId = async (eventId: string) => {
             {
               _id: new mongoose.Types.ObjectId(),
               description: "Materiales",
+              name: "Materiales",
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
@@ -65,6 +67,7 @@ const getEventDetailByEventId = async (eventId: string) => {
             {
               _id: new mongoose.Types.ObjectId(),
               description: "Alimentación",
+              name: "Alimentación",
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
@@ -72,6 +75,7 @@ const getEventDetailByEventId = async (eventId: string) => {
             {
               _id: new mongoose.Types.ObjectId(),
               description: "Mano de obra",
+              name: "Mano de obra",
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
@@ -150,6 +154,7 @@ const editItemInSection = async (
   sectionId: string,
   itemId: string,
   updatedItem: {
+    name?: string;
     description?: string;
     rentalPrice?: number;
     costPrice?: number;
@@ -164,6 +169,7 @@ const editItemInSection = async (
     },
     {
       $set: {
+        "section.$[sectionElem].items.$[itemElem].name": updatedItem.name,
         "section.$[sectionElem].items.$[itemElem].description":
           updatedItem.description,
         "section.$[sectionElem].items.$[itemElem].rentalPrice":

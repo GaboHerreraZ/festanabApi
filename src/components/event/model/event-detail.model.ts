@@ -8,6 +8,7 @@ export interface IEventDetail extends Document {
     type: "admin" | "client";
     items: {
       _id: mongoose.Types.ObjectId;
+      name: string;
       description: string;
       rentalPrice: number;
       costPrice: number;
@@ -30,6 +31,7 @@ const EventDetailSchema: Schema<IEventDetail> = new Schema({
       items: [
         {
           _id: { type: mongoose.Types.ObjectId, required: true },
+          name: { type: String, required: true },
           description: { type: String, required: true },
           rentalPrice: { type: Number, required: true, min: 0 },
           costPrice: { type: Number, required: true, min: 0 },

@@ -52,7 +52,7 @@ const createSection = async (
 const upsertItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { eventId, sectionId } = req.params;
-    const { _id, description, rentalPrice, owner, costPrice } = req.body;
+    const { _id, description, rentalPrice, owner, costPrice, name } = req.body;
 
     let item = {
       _id: _id ? _id : new mongoose.Types.ObjectId(),
@@ -60,6 +60,7 @@ const upsertItem = async (req: Request, res: Response, next: NextFunction) => {
       rentalPrice,
       owner,
       costPrice,
+      name,
     };
 
     if (_id && _id.trim() !== "") {
