@@ -8,6 +8,7 @@ import { IProduct } from "../model/inventory.model";
 
 const getInventory = async (_: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("amigooo");
     const inventory = await getAllInventory();
 
     res.status(201).json({

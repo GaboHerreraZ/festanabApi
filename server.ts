@@ -6,8 +6,6 @@ connectDB();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(errorHandler);
-
 app.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}/api`);
 });
