@@ -31,7 +31,7 @@ eventRouter.get("/get-event-by-id/:id", verifyToken, getEventById);
 
 eventRouter.post("/add-edit-event", verifyToken, addEditEvent);
 
-eventRouter.get("/event-detail/:eventId", verifyToken, getEventDetail);
+eventRouter.get("/event-detail/:eventId", getEventDetail);
 eventRouter.post("/event-detail/:eventId/section", verifyToken, createSection);
 eventRouter.post(
   "/event-detail/:eventId/section/:sectionId/item",
@@ -57,10 +57,6 @@ eventRouter.post("/add-hour", verifyToken, addNewHour);
 eventRouter.post("/edit-hour", verifyToken, editHour);
 eventRouter.delete("/delete-hour/:id", verifyToken, deleteHourById);
 
-eventRouter.get(
-  "/get-totals-by-event/:eventId",
-  verifyToken,
-  getTotalsByEventId
-);
+eventRouter.get("/get-totals-by-event/:eventId", getTotalsByEventId);
 
 export default eventRouter;
