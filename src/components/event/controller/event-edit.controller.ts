@@ -6,6 +6,8 @@ import {
   deleteItemFromSection,
   editItemInSection,
   getEventDetailByEventId,
+  editSectionDescription,
+  updateAiuSection,
 } from "../service/event-detail.service";
 import mongoose from "mongoose";
 
@@ -20,6 +22,22 @@ const getEventDetail = async (
     const detail = await getEventDetailByEventId(eventId);
 
     res.status(200).json({ data: detail });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateAiuEventSection = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { sectionId, items } = req.body;
+
+    await updateAiuSection(sectionId, items);
+
+    res.status(201).json({ data: true });
   } catch (error) {
     next(error);
   }
@@ -49,16 +67,32 @@ const createSection = async (
   }
 };
 
+const editSectionDescriptionById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { sectionId, eventId, description } = req.body;
+
+    await editSectionDescription(eventId, sectionId, description);
+
+    res.status(200).json({ data: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const upsertItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { eventId, sectionId } = req.params;
-    const { _id, description, rentalPrice, owner, costPrice, name } = req.body;
+    const { _id, rentalPrice, owner, costPrice, name, quantity } = req.body;
 
     let item = {
       _id: _id ? _id : new mongoose.Types.ObjectId(),
-      description,
       rentalPrice,
       owner,
+      quantity,
       costPrice,
       name,
     };
@@ -87,4 +121,11 @@ const deleteItem = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getEventDetail, createSection, upsertItem, deleteItem };
+export {
+  getEventDetail,
+  createSection,
+  upsertItem,
+  deleteItem,
+  editSectionDescriptionById,
+  updateAiuEventSection,
+};

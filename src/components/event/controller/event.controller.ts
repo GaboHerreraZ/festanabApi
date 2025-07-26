@@ -43,10 +43,8 @@ const addEditEvent = async (
 
     if (!_id) {
       const newItem = await addNewEvent(
-        rest.name,
         rest.description,
         rest.owner,
-        rest.phoneNumber,
         rest.date,
         rest.time,
         rest.location,
@@ -61,10 +59,8 @@ const addEditEvent = async (
 
     const event = {
       _id,
-      name: rest.name,
       description: rest.description,
       owner: rest.owner,
-      phoneNumber: rest.phoneNumber,
       date: rest.date,
       time: rest.time,
       location: rest.location,

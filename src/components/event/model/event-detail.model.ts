@@ -6,10 +6,10 @@ export interface IEventDetail extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
     type: "admin" | "client";
+    description: string;
     items: {
       _id: mongoose.Types.ObjectId;
       name: string;
-      description: string;
       rentalPrice: number;
       costPrice: number;
       owner: "Propio" | "Tercero";
@@ -27,14 +27,16 @@ const EventDetailSchema: Schema<IEventDetail> = new Schema({
     {
       _id: { type: mongoose.Types.ObjectId, required: true },
       name: { type: String, required: true },
+      description: { type: String, required: false, default: "" },
       type: { type: String, required: true, enum: ["admin", "client"] },
       items: [
         {
           _id: { type: mongoose.Types.ObjectId, required: true },
           name: { type: String, required: true },
-          description: { type: String, required: true },
+          quantity: { type: Number, required: true, min: 1, default: 1 },
           rentalPrice: { type: Number, required: true, min: 0 },
           costPrice: { type: Number, required: true, min: 0 },
+          disabled: { type: Boolean, default: false },
           owner: {
             type: String,
             required: true,

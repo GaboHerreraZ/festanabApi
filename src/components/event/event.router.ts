@@ -9,8 +9,10 @@ import {
 import {
   createSection,
   deleteItem,
+  editSectionDescriptionById,
   getEventDetail,
   upsertItem,
+  updateAiuEventSection,
 } from "./controller/event-edit.controller";
 import {
   createOrUpdateBill,
@@ -58,5 +60,9 @@ eventRouter.post("/edit-hour", verifyToken, editHour);
 eventRouter.delete("/delete-hour/:id", verifyToken, deleteHourById);
 
 eventRouter.get("/get-totals-by-event/:eventId", getTotalsByEventId);
+
+eventRouter.post("/edit-section", verifyToken, editSectionDescriptionById);
+
+eventRouter.post("/update-aiu-section", verifyToken, updateAiuEventSection);
 
 export default eventRouter;

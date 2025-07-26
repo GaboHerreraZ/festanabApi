@@ -3,13 +3,30 @@ import {
   getAllInventory,
   addNewItemToInventory,
   updateInventoryItem,
+  findProductsByName,
 } from "../service/inventory.service";
 import { IProduct } from "../model/inventory.model";
 
 const getInventory = async (_: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("amigooo");
     const inventory = await getAllInventory();
+
+    res.status(201).json({
+      data: inventory,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getInventoryByName = async (
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name } = _.params;
+    const inventory = await findProductsByName(name);
 
     res.status(201).json({
       data: inventory,
@@ -48,4 +65,4 @@ const addEditItem = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getInventory, addEditItem };
+export { getInventory, addEditItem, getInventoryByName };

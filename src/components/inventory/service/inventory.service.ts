@@ -20,4 +20,16 @@ const updateInventoryItem = async (product: IProduct) => {
   });
 };
 
-export { getAllInventory, addNewItemToInventory, updateInventoryItem };
+const findProductsByName = async (query: string) => {
+  const regex = new RegExp(query, "i");
+  return await Product.find({ name: { $regex: regex } })
+    .lean()
+    .exec();
+};
+
+export {
+  getAllInventory,
+  addNewItemToInventory,
+  updateInventoryItem,
+  findProductsByName,
+};

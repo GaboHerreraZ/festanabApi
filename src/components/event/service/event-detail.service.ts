@@ -15,31 +15,48 @@ const getEventDetailByEventId = async (eventId: string) => {
           items: [
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Administración",
+              name: "Utilidad",
+              quantity: 1,
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
+              disabled: false,
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Imprevistos",
+              name: "Administración",
+              quantity: 1,
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
+              disabled: true,
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Utilidad",
+              name: "Imprevistos",
+              quantity: 1,
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
+              disabled: true,
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Contabilidad",
+              name: "Contabilidad",
+              quantity: 1,
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
+              disabled: true,
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Gestión",
+              quantity: 1,
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+              disabled: true,
             },
           ],
         },
@@ -50,7 +67,6 @@ const getEventDetailByEventId = async (eventId: string) => {
           items: [
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Transporte",
               name: "Transporte",
               rentalPrice: 0,
               costPrice: 0,
@@ -58,7 +74,6 @@ const getEventDetailByEventId = async (eventId: string) => {
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Materiales",
               name: "Materiales",
               rentalPrice: 0,
               costPrice: 0,
@@ -66,7 +81,6 @@ const getEventDetailByEventId = async (eventId: string) => {
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Alimentación",
               name: "Alimentación",
               rentalPrice: 0,
               costPrice: 0,
@@ -74,8 +88,14 @@ const getEventDetailByEventId = async (eventId: string) => {
             },
             {
               _id: new mongoose.Types.ObjectId(),
-              description: "Mano de obra",
               name: "Mano de obra",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Diseño",
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
@@ -94,6 +114,7 @@ const addSection = async (eventId: string, sectionName: string) => {
   const newSection = {
     _id: new mongoose.Types.ObjectId(),
     name: sectionName,
+    description: "",
     type: "client",
     items: [],
   };
@@ -104,6 +125,27 @@ const addSection = async (eventId: string, sectionName: string) => {
   );
 
   return newSection;
+};
+
+const editSectionDescription = async (
+  eventId: string,
+  sectionId: string,
+  description: string
+) => {
+  const eventDetail = await EventDetail.findOneAndUpdate(
+    {
+      eventId,
+      "section._id": new mongoose.Types.ObjectId(sectionId),
+    },
+    {
+      $set: {
+        "section.$.description": description,
+      },
+    },
+    { new: true }
+  );
+
+  return eventDetail;
 };
 
 const checkSectionExists = async (eventId: string, name: string) => {
@@ -129,8 +171,8 @@ const addItemToSection = async (
   sectionId: string,
   item: {
     _id: mongoose.Types.ObjectId;
-    description: string;
     rentalPrice?: number;
+    quantity?: number;
     costPrice?: number;
     owner?: "Propio" | "Tercero";
   }
@@ -155,8 +197,8 @@ const editItemInSection = async (
   itemId: string,
   updatedItem: {
     name?: string;
-    description?: string;
     rentalPrice?: number;
+    quantity?: number;
     costPrice?: number;
     owner?: "Propio" | "Tercero";
   }
@@ -170,12 +212,12 @@ const editItemInSection = async (
     {
       $set: {
         "section.$[sectionElem].items.$[itemElem].name": updatedItem.name,
-        "section.$[sectionElem].items.$[itemElem].description":
-          updatedItem.description,
         "section.$[sectionElem].items.$[itemElem].rentalPrice":
           updatedItem.rentalPrice,
         "section.$[sectionElem].items.$[itemElem].costPrice":
           updatedItem.costPrice,
+        "section.$[sectionElem].items.$[itemElem].quantity":
+          updatedItem.quantity,
         "section.$[sectionElem].items.$[itemElem].owner": updatedItem.owner,
       },
     },
@@ -212,6 +254,16 @@ const deleteItemFromSection = async (
   return eventDetail;
 };
 
+const updateAiuSection = async (sectionId: string, items: any[]) => {
+  const eventDetail = await EventDetail.findOneAndUpdate(
+    { "section._id": new mongoose.Types.ObjectId(sectionId) },
+    { $set: { "section.$.items": items } },
+    { new: true }
+  );
+
+  return eventDetail;
+};
+
 export {
   getEventDetailByEventId,
   addSection,
@@ -219,4 +271,6 @@ export {
   checkSectionExists,
   editItemInSection,
   deleteItemFromSection,
+  editSectionDescription,
+  updateAiuSection,
 };

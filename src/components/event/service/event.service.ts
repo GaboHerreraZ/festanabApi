@@ -13,20 +13,16 @@ const getAllEvent = async () => {
 };
 
 const addNewEvent = async (
-  name: string,
   description: string,
   owner: string,
-  phoneNumber: string,
   date: Date,
   time: Date,
   location: string,
   nit: string
 ) => {
   const newEvent = new Event({
-    name,
     description,
     owner,
-    phoneNumber,
     date,
     time,
     location,
