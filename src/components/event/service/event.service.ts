@@ -18,7 +18,8 @@ const addNewEvent = async (
   date: Date,
   time: Date,
   location: string,
-  nit: string
+  nit: string,
+  customerId: string
 ) => {
   const newEvent = new Event({
     description,
@@ -27,6 +28,7 @@ const addNewEvent = async (
     time,
     location,
     nit,
+    customerId,
   });
   return await newEvent.save();
 };

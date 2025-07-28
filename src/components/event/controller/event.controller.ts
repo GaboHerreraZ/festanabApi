@@ -48,7 +48,8 @@ const addEditEvent = async (
         rest.date,
         rest.time,
         rest.location,
-        rest.nit
+        rest.nit,
+        rest.customerId
       );
       res.status(201).json({
         data: newItem,
