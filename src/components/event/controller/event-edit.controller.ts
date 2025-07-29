@@ -86,7 +86,16 @@ const editSectionDescriptionById = async (
 const upsertItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { eventId, sectionId } = req.params;
-    const { _id, rentalPrice, owner, costPrice, name, quantity } = req.body;
+    const {
+      _id,
+      rentalPrice,
+      owner,
+      costPrice,
+      name,
+      quantity,
+      description,
+      done,
+    } = req.body;
 
     let item = {
       _id: _id ? _id : new mongoose.Types.ObjectId(),
@@ -94,7 +103,9 @@ const upsertItem = async (req: Request, res: Response, next: NextFunction) => {
       owner,
       quantity,
       costPrice,
+      description,
       name,
+      done,
     };
 
     if (_id && _id.trim() !== "") {

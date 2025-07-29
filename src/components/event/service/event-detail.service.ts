@@ -174,7 +174,9 @@ const addItemToSection = async (
     rentalPrice?: number;
     quantity?: number;
     costPrice?: number;
+    description?: string;
     owner?: "Propio" | "Tercero";
+    done?: boolean;
   }
 ) => {
   await EventDetail.findOneAndUpdate(
@@ -199,8 +201,10 @@ const editItemInSection = async (
     name?: string;
     rentalPrice?: number;
     quantity?: number;
+    description?: string;
     costPrice?: number;
     owner?: "Propio" | "Tercero";
+    done?: boolean;
   }
 ) => {
   const eventDetail = await EventDetail.findOneAndUpdate(
@@ -216,9 +220,12 @@ const editItemInSection = async (
           updatedItem.rentalPrice,
         "section.$[sectionElem].items.$[itemElem].costPrice":
           updatedItem.costPrice,
+        "section.$[sectionElem].items.$[itemElem].description":
+          updatedItem.description,
         "section.$[sectionElem].items.$[itemElem].quantity":
           updatedItem.quantity,
         "section.$[sectionElem].items.$[itemElem].owner": updatedItem.owner,
+        "section.$[sectionElem].items.$[itemElem].done": updatedItem.done,
       },
     },
     {
