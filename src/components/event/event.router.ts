@@ -13,6 +13,7 @@ import {
   getEventDetail,
   upsertItem,
   updateAiuEventSection,
+  deleteSectionFromEvent,
 } from "./controller/event-edit.controller";
 import {
   createOrUpdateBill,
@@ -64,5 +65,11 @@ eventRouter.get("/get-totals-by-event/:eventId", getTotalsByEventId);
 eventRouter.post("/edit-section", verifyToken, editSectionDescriptionById);
 
 eventRouter.post("/update-aiu-section", verifyToken, updateAiuEventSection);
+
+eventRouter.delete(
+  "/delete-section/:eventId/:sectionId",
+  verifyToken,
+  deleteSectionFromEvent
+);
 
 export default eventRouter;

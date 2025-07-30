@@ -10,6 +10,48 @@ const getEventDetailByEventId = async (eventId: string) => {
       section: [
         {
           _id: new mongoose.Types.ObjectId(),
+          name: "Logistica",
+          type: "admin",
+          items: [
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Transporte",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Materiales",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Alimentación",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Mano de obra",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Diseño",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
+          ],
+        },
+        {
+          _id: new mongoose.Types.ObjectId(),
           name: "Administración , Imprevistos y Utilidad",
           type: "admin",
           items: [
@@ -60,48 +102,6 @@ const getEventDetailByEventId = async (eventId: string) => {
             },
           ],
         },
-        {
-          _id: new mongoose.Types.ObjectId(),
-          name: "Logistica",
-          type: "admin",
-          items: [
-            {
-              _id: new mongoose.Types.ObjectId(),
-              name: "Transporte",
-              rentalPrice: 0,
-              costPrice: 0,
-              owner: "Propio",
-            },
-            {
-              _id: new mongoose.Types.ObjectId(),
-              name: "Materiales",
-              rentalPrice: 0,
-              costPrice: 0,
-              owner: "Propio",
-            },
-            {
-              _id: new mongoose.Types.ObjectId(),
-              name: "Alimentación",
-              rentalPrice: 0,
-              costPrice: 0,
-              owner: "Propio",
-            },
-            {
-              _id: new mongoose.Types.ObjectId(),
-              name: "Mano de obra",
-              rentalPrice: 0,
-              costPrice: 0,
-              owner: "Propio",
-            },
-            {
-              _id: new mongoose.Types.ObjectId(),
-              name: "Diseño",
-              rentalPrice: 0,
-              costPrice: 0,
-              owner: "Propio",
-            },
-          ],
-        },
       ],
     });
     await eventDetail.save();
@@ -125,6 +125,19 @@ const addSection = async (eventId: string, sectionName: string) => {
   );
 
   return newSection;
+};
+
+const deleteSection = async (eventId: string, sectionId: string) => {
+  const result = await EventDetail.updateOne(
+    { eventId: new mongoose.Types.ObjectId(eventId) },
+    {
+      $pull: {
+        section: { _id: new mongoose.Types.ObjectId(sectionId) },
+      },
+    }
+  );
+
+  return result;
 };
 
 const editSectionDescription = async (
@@ -280,4 +293,5 @@ export {
   deleteItemFromSection,
   editSectionDescription,
   updateAiuSection,
+  deleteSection,
 };

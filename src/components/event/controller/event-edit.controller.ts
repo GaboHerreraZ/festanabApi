@@ -8,8 +8,26 @@ import {
   getEventDetailByEventId,
   editSectionDescription,
   updateAiuSection,
+  deleteSection,
 } from "../service/event-detail.service";
 import mongoose from "mongoose";
+
+const deleteSectionFromEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { eventId, sectionId } = req.params;
+    console.log(eventId, sectionId);
+
+    const detail = await deleteSection(eventId, sectionId);
+
+    res.status(200).json({ data: detail });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getEventDetail = async (
   req: Request,
@@ -139,4 +157,5 @@ export {
   deleteItem,
   editSectionDescriptionById,
   updateAiuEventSection,
+  deleteSectionFromEvent,
 };
