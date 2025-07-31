@@ -71,7 +71,7 @@ const getEventDetailByEventId = async (eventId: string) => {
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
-              disabled: true,
+              disabled: false,
             },
             {
               _id: new mongoose.Types.ObjectId(),
@@ -80,7 +80,7 @@ const getEventDetailByEventId = async (eventId: string) => {
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
-              disabled: true,
+              disabled: false,
             },
             {
               _id: new mongoose.Types.ObjectId(),
@@ -89,7 +89,7 @@ const getEventDetailByEventId = async (eventId: string) => {
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
-              disabled: true,
+              disabled: false,
             },
             {
               _id: new mongoose.Types.ObjectId(),
@@ -98,7 +98,7 @@ const getEventDetailByEventId = async (eventId: string) => {
               rentalPrice: 0,
               costPrice: 0,
               owner: "Propio",
-              disabled: true,
+              disabled: false,
             },
           ],
         },
