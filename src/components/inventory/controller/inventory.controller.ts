@@ -38,10 +38,15 @@ const getInventoryByName = async (
 
 const addEditItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { _id, name, quantity, rentalPrice } = req.body;
+    const { _id, name, quantity, rentalPrice, description } = req.body;
 
     if (!_id) {
-      const newItem = await addNewItemToInventory(name, quantity, rentalPrice);
+      const newItem = await addNewItemToInventory(
+        name,
+        quantity,
+        rentalPrice,
+        description
+      );
       res.status(201).json({
         data: newItem,
       });
@@ -54,6 +59,7 @@ const addEditItem = async (req: Request, res: Response, next: NextFunction) => {
       name,
       quantity,
       rentalPrice,
+      description,
     } as IProduct;
 
     const editItem = await updateInventoryItem(product);

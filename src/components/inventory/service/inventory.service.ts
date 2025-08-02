@@ -7,9 +7,10 @@ const getAllInventory = async () => {
 const addNewItemToInventory = async (
   name: string,
   quantity: number,
-  rentalPrice: number
+  rentalPrice: number,
+  description: string
 ) => {
-  const newProduct = new Product({ name, quantity, rentalPrice });
+  const newProduct = new Product({ name, quantity, rentalPrice, description });
   return await newProduct.save();
 };
 
