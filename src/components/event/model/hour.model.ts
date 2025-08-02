@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IHour extends Document {
   eventId: mongoose.Types.ObjectId;
+  employeeId: mongoose.Types.ObjectId;
   employee: string;
   cc: string;
   date: Date;
@@ -40,6 +41,11 @@ export interface IHour extends Document {
 }
 
 const hourSchema: Schema = new Schema({
+  employeeId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Employee",
+  },
   eventId: { type: mongoose.Types.ObjectId, required: true, ref: "Event" },
   employee: { type: String, required: true },
   cc: { type: String, required: true },

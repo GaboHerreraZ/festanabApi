@@ -48,6 +48,7 @@ const addNewHour = async (req: Request, res: Response, next: NextFunction) => {
 
     res.status(201).json({ data: hour });
   } catch (error) {
+    console.log("error amigazoo", error);
     next(error);
   }
 };
