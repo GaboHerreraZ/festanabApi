@@ -15,7 +15,7 @@ const createHour = async (hour: IHour) => {
     },
   }).sort({ endTime: -1 });
 
-  if (exists) {
+  /*   if (exists) {
     if (new Date(hour.startTime) <= new Date(exists.endTime)) {
       throw new Error(
         `La hora de inicio debe ser mayor a la hora de fin de la última hora registrada en el dia ${exists.date.toLocaleDateString()}`
@@ -23,7 +23,7 @@ const createHour = async (hour: IHour) => {
     }
 
     hour.auxiliaryTrasport = 0;
-  }
+  } */
 
   return await Hour.create(hour);
 };
