@@ -9,7 +9,7 @@ const getEventId = async (eventId: string) => {
 };
 
 const getAllEvent = async () => {
-  return await Event.find();
+  return await Event.find().sort({ date: -1 });
 };
 
 const addNewEvent = async (
