@@ -6,7 +6,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("gonorrea");
   console.error(`[${req.method}] ${req.url} - Error:`, err);
   console.error(`[${req.method}] ${req.url} - Error:`, next);
 

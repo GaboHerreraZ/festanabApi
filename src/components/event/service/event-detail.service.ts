@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { EventDetail } from "../model/event-detail.model";
+import { EventDetail, IEventDetail } from "../model/event-detail.model";
 
 const getEventDetailByEventId = async (eventId: string) => {
   let eventDetail = await EventDetail.findOne({ eventId });
@@ -108,6 +108,12 @@ const getEventDetailByEventId = async (eventId: string) => {
   }
 
   return eventDetail;
+};
+
+const addNewEventDetail = async (event: IEventDetail) => {
+  const newEventDetail = new EventDetail(event);
+  await newEventDetail.save();
+  return newEventDetail;
 };
 
 const addSection = async (eventId: string, sectionName: string) => {
@@ -294,4 +300,5 @@ export {
   editSectionDescription,
   updateAiuSection,
   deleteSection,
+  addNewEventDetail,
 };

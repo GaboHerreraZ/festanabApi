@@ -5,6 +5,7 @@ import {
   addEditEvent,
   getTotalsByEventId,
   getEventById,
+  clone,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -71,5 +72,7 @@ eventRouter.delete(
   verifyToken,
   deleteSectionFromEvent
 );
+
+eventRouter.get("/clone-event/:eventId/", verifyToken, clone);
 
 export default eventRouter;

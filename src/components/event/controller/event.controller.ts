@@ -7,6 +7,12 @@ import {
   getTotalsByEvent,
 } from "../service/event.service";
 import { IEvent } from "../model/event.model";
+import {
+  addNewEventDetail,
+  getEventDetailByEventId,
+} from "../service/event-detail.service";
+import { IEventDetail } from "../model/event-detail.model";
+import mongoose, { Types } from "mongoose";
 
 const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -94,4 +100,56 @@ const getTotalsByEventId = async (
   }
 };
 
-export { getEvents, addEditEvent, getTotalsByEventId, getEventById };
+const clone = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { eventId } = req.params;
+
+    const eventToClone = await getEventId(eventId);
+    if (!eventToClone) throw new Error("Event not found");
+
+    const newEvent: IEvent = await addNewEvent(
+      eventToClone.description + " (CLONE)",
+      eventToClone.owner + " (CLONE)",
+      eventToClone.date,
+      eventToClone.time,
+      eventToClone.location + " (CLONE)",
+      eventToClone.nit,
+      eventToClone.customerId.toString()
+    );
+
+    const eventDetail = await getEventDetailByEventId(eventId);
+
+    const newEventDetail = {
+      eventId: newEvent._id as Types.ObjectId,
+      section: eventDetail
+        ? eventDetail.section.map((section) => ({
+            _id: new mongoose.Types.ObjectId(),
+            name: section.name,
+            description: section.description,
+            type: section.type,
+            items: section.items.map((item) => ({
+              _id: new mongoose.Types.ObjectId(),
+              name: item.name,
+              description: item.description,
+              quantity: item.quantity,
+              rentalPrice: item.rentalPrice ? item.rentalPrice : 0,
+              costPrice: item.costPrice ? item.costPrice : 0,
+              done: false,
+              disabled: item.disabled,
+              owner: item.owner,
+            })),
+          }))
+        : [],
+    } as IEventDetail;
+
+    const newEventCreated = await addNewEventDetail(newEventDetail);
+
+    res.status(201).json({
+      data: newEventCreated.toObject(),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getEvents, addEditEvent, getTotalsByEventId, getEventById, clone };
