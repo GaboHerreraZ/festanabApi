@@ -6,6 +6,10 @@ import {
   getTotalsByEventId,
   getEventById,
   clone,
+  newCustomerQuote,
+  getCustomerQuotesByEventId,
+  deleteQuoteById,
+  getQuoteById,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -74,5 +78,16 @@ eventRouter.delete(
 );
 
 eventRouter.get("/clone-event/:eventId/", verifyToken, clone);
+
+eventRouter.post("/customer-quote/", verifyToken, newCustomerQuote);
+eventRouter.get(
+  "/customer-quotes/:eventId",
+  verifyToken,
+  getCustomerQuotesByEventId
+);
+
+eventRouter.delete("/delete-customer-quote/:id", verifyToken, deleteQuoteById);
+
+eventRouter.get("/get-customer-quote/:id", verifyToken, getQuoteById);
 
 export default eventRouter;

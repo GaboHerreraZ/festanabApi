@@ -5,6 +5,10 @@ import {
   updateEvent,
   getEventId,
   getTotalsByEvent,
+  createCustomerQuotes,
+  getAllCustomerQuotes,
+  deleteCustomerQuote,
+  getCustomerQuoteById,
 } from "../service/event.service";
 import { IEvent } from "../model/event.model";
 import {
@@ -152,4 +156,100 @@ const clone = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getEvents, addEditEvent, getTotalsByEventId, getEventById, clone };
+const newCustomerQuote = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { eventId } = req.body;
+
+    const totals = await getTotalsByEvent(eventId);
+    const detail = await getEventDetailByEventId(eventId);
+
+    const { _id, ...rest } = totals;
+
+    const customerQuote = {
+      ...rest,
+      utility: rest.totalRentalPrice - rest.totalHourCost - rest.totalBillValue,
+      _id: new mongoose.Types.ObjectId(),
+      eventId: new mongoose.Types.ObjectId(eventId),
+      detail: {
+        eventId: detail.eventId,
+        section: detail.section,
+      },
+      createdAt: new Date(),
+    };
+
+    const event = await createCustomerQuotes(customerQuote);
+
+    res.status(201).json({
+      data: {
+        ...customerQuote,
+        _id: event._id,
+        detail,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCustomerQuotesByEventId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { eventId } = req.params;
+    const quotes = await getAllCustomerQuotes(eventId);
+
+    res.status(201).json({
+      data: quotes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteQuoteById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const hours = await deleteCustomerQuote(id);
+
+    res.status(201).json({ data: hours });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getQuoteById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const quote = await getCustomerQuoteById(id);
+    res.status(201).json({ data: quote });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  getEvents,
+  addEditEvent,
+  getTotalsByEventId,
+  getEventById,
+  clone,
+  newCustomerQuote,
+  getCustomerQuotesByEventId,
+  deleteQuoteById,
+  getQuoteById,
+};

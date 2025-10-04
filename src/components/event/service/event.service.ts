@@ -3,6 +3,7 @@ import { EventDetail } from "../model/event-detail.model";
 import { IEvent, Event } from "../model/event.model";
 import { Bill } from "../model/bill.model";
 import { Hour } from "../model/hour.model";
+import { CustomerQuote, ICustomerQuote } from "../model/customer-quote.model";
 
 const getEventId = async (eventId: string) => {
   return await Event.findById(eventId);
@@ -92,4 +93,31 @@ const getTotalsByEvent = async (eventId: string) => {
   };
 };
 
-export { getAllEvent, addNewEvent, updateEvent, getTotalsByEvent, getEventId };
+const createCustomerQuotes = async (data: any) => {
+  const newEventTotals = new CustomerQuote(data);
+  return await newEventTotals.save();
+};
+
+const getAllCustomerQuotes = async (eventId: string) => {
+  return await CustomerQuote.find({ eventId }).sort({ createdAt: -1 });
+};
+
+const deleteCustomerQuote = async (quoteId: string) => {
+  return await CustomerQuote.findByIdAndDelete(quoteId);
+};
+
+const getCustomerQuoteById = async (quoteId: string) => {
+  return await CustomerQuote.findById(quoteId);
+};
+
+export {
+  getAllEvent,
+  addNewEvent,
+  updateEvent,
+  getTotalsByEvent,
+  getEventId,
+  createCustomerQuotes,
+  getAllCustomerQuotes,
+  deleteCustomerQuote,
+  getCustomerQuoteById,
+};
