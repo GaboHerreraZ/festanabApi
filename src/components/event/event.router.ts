@@ -88,6 +88,6 @@ eventRouter.get(
 
 eventRouter.delete("/delete-customer-quote/:id", verifyToken, deleteQuoteById);
 
-eventRouter.get("/get-customer-quote/:id", verifyToken, getQuoteById);
+eventRouter.get("/get-customer-quote/:id", getQuoteById);
 
 export default eventRouter;
