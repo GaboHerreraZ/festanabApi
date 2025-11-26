@@ -3,6 +3,7 @@ import {
   addNewEvent,
   getAllEvent,
   updateEvent,
+  updateEventStatus,
   getEventId,
   getTotalsByEvent,
   createCustomerQuotes,
@@ -79,6 +80,23 @@ const addEditEvent = async (
     } as IEvent;
 
     const editItem = await updateEvent(event);
+    res.status(201).json({
+      data: editItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateEventStatusById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { _id, status } = req.body;
+
+    const editItem = await updateEventStatus(_id, status);
     res.status(201).json({
       data: editItem,
     });
@@ -252,4 +270,5 @@ export {
   getCustomerQuotesByEventId,
   deleteQuoteById,
   getQuoteById,
+  updateEventStatusById,
 };

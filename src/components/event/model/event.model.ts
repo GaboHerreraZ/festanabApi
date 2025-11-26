@@ -5,6 +5,7 @@ export interface IEvent extends Document {
   owner: string;
   description: string;
   location: string;
+  status: string;
   nit: string;
   date: Date;
   time: Date;
@@ -22,6 +23,11 @@ const EventSchema: Schema<IEvent> = new Schema({
   location: { type: String, required: true },
   date: { type: Date, required: false },
   time: { type: Date, required: false, default: null },
+  status: {
+    type: String,
+    required: true,
+    enum: ["inQuote", "pending", "completed"],
+  },
 });
 
 export const Event = mongoose.model<IEvent>("Event", EventSchema);

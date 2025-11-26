@@ -41,6 +41,17 @@ const updateEvent = async (event: IEvent) => {
   });
 };
 
+const updateEventStatus = async (eventId: string, status: string) => {
+  return await Event.findByIdAndUpdate(
+    eventId,
+    { status },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
+
 const getTotalsByEvent = async (eventId: string) => {
   const event = await Event.findById(eventId).lean();
 
@@ -114,6 +125,7 @@ export {
   getAllEvent,
   addNewEvent,
   updateEvent,
+  updateEventStatus,
   getTotalsByEvent,
   getEventId,
   createCustomerQuotes,
