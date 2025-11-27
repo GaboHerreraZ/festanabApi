@@ -6,48 +6,46 @@ export const buildRates = (
   workParams: any,
   settings: ISetting
 ) => {
+  const { hasHour, ...rest } = hourUpdated;
+
   return {
-    ...hourUpdated,
+    ...rest,
     hrsOrd: getTotalDays.ordinaryDayHours,
-    valHrsOrd: getTotalDays.ordinaryDayHours * hourUpdated.hourPrice,
+    valHrsOrd: getTotalDays.ordinaryDayHours * rest.hourPrice,
     hrsExtDia: getTotalDays.extraDayHours,
     valExtDia:
-      getTotalDays.extraDayHours *
-      hourUpdated.hourPrice *
-      workParams.rates.extraDay,
+      getTotalDays.extraDayHours * rest.hourPrice * workParams.rates.extraDay,
     hrsNoc: getTotalDays.ordinaryNightHours,
     valHrsNoc:
       getTotalDays.ordinaryNightHours *
-      hourUpdated.hourPrice *
+      rest.hourPrice *
       workParams.rates.ordinaryNight,
     hrsExtNoc: getTotalDays.extraNightHours,
     valExtNoc:
       getTotalDays.extraNightHours *
-      hourUpdated.hourPrice *
+      rest.hourPrice *
       workParams.rates.extraNight,
     hrsDomDia: getTotalDays.sundayDayHours,
     valDomDia:
-      getTotalDays.sundayDayHours *
-      hourUpdated.hourPrice *
-      workParams.rates.sundayDay,
+      getTotalDays.sundayDayHours * rest.hourPrice * workParams.rates.sundayDay,
     hrsExtDomDia: getTotalDays.extraSundayDayHours,
     valExtDomDia:
       getTotalDays.extraSundayDayHours *
-      hourUpdated.hourPrice *
+      rest.hourPrice *
       workParams.rates.extraSundayDay,
     hrsDomNoc: getTotalDays.sundayNightHours,
     valDomNoc:
       getTotalDays.sundayNightHours *
-      hourUpdated.hourPrice *
+      rest.hourPrice *
       workParams.rates.sundayNight,
     hrsExtDomNoc: getTotalDays.extraSundayNightHours,
     valExtDomNoc:
       getTotalDays.extraSundayNightHours *
-      hourUpdated.hourPrice *
+      rest.hourPrice *
       workParams.rates.extraSundayNight,
-    auxiliaryTrasport: settings.auxiliaryTrasport,
+    auxiliaryTrasport: hasHour ? 0 : settings.auxiliaryTrasport,
     total:
-      hourUpdated.hourPrice *
+      rest.hourPrice *
         (getTotalDays.ordinaryDayHours +
           getTotalDays.extraDayHours * workParams.rates.extraDay +
           getTotalDays.ordinaryNightHours * workParams.rates.ordinaryNight +
