@@ -3,6 +3,7 @@ import {
   addEditCustomer,
   getCustomerByName,
   getCustomers,
+  deleteCustomerById,
 } from "./controller/customer.controller";
 import { verifyToken } from "../../middleware/verifyToken";
 
@@ -15,5 +16,7 @@ customerRouter.get(
   verifyToken,
   getCustomerByName
 );
+
+customerRouter.delete("/delete-customer/:id", verifyToken, deleteCustomerById);
 
 export default customerRouter;

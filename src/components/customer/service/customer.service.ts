@@ -23,4 +23,14 @@ const findCustomerByName = async (query: string) => {
     .exec();
 };
 
-export { addNewCustomer, updateCustomer, getAllCustomers, findCustomerByName };
+const deleteCustomer = async (customerId: string) => {
+  return await Customer.findByIdAndDelete(customerId);
+};
+
+export {
+  addNewCustomer,
+  updateCustomer,
+  getAllCustomers,
+  findCustomerByName,
+  deleteCustomer,
+};

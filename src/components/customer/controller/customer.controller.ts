@@ -4,6 +4,7 @@ import {
   updateCustomer,
   getAllCustomers,
   findCustomerByName,
+  deleteCustomer,
 } from "../service/customer.service";
 import { ICustomer } from "../model/customer.model";
 
@@ -70,4 +71,21 @@ const getCustomerByName = async (
   }
 };
 
-export { getCustomers, addEditCustomer, getCustomerByName };
+const deleteCustomerById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const editItem = await deleteCustomer(id);
+    res.status(201).json({
+      data: editItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getCustomers, addEditCustomer, getCustomerByName, deleteCustomerById };

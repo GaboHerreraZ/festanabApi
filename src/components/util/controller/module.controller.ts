@@ -1,8 +1,9 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../../../middleware/verifyToken";
 import {
   getAllModules,
   addNewModule,
+  deleteModule,
   updateModule,
 } from "../service/module.service";
 import { IModule } from "../model/module.model";
@@ -53,4 +54,21 @@ const addEditModule = async (
   }
 };
 
-export { getAllModulesAvailable, addEditModule };
+const deleteModuleById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const editItem = await deleteModule(id);
+    res.status(201).json({
+      data: editItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getAllModulesAvailable, addEditModule, deleteModuleById };

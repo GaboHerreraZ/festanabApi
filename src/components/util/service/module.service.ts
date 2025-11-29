@@ -16,4 +16,8 @@ const updateModule = async (module: IModule) => {
   });
 };
 
-export { getAllModules, updateModule, addNewModule };
+const deleteModule = async (moduleId: string) => {
+  return await Module.findByIdAndDelete(moduleId);
+};
+
+export { getAllModules, updateModule, addNewModule, deleteModule };

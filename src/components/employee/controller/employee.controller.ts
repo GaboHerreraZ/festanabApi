@@ -3,6 +3,7 @@ import {
   getAllEmployees,
   addNewEmployee,
   updateEmployee,
+  deleteEmployee,
 } from "../service/employee.service";
 import { IEmployee } from "../model/employee.model";
 
@@ -53,4 +54,21 @@ const addEditEmployee = async (
   }
 };
 
-export { getEmployees, addEditEmployee };
+const deleteEmployeeById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const editItem = await deleteEmployee(id);
+    res.status(201).json({
+      data: editItem,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getEmployees, addEditEmployee, deleteEmployeeById };

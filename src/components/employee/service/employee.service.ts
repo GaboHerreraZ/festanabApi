@@ -16,4 +16,8 @@ const updateEmployee = async (employee: IEmployee) => {
   });
 };
 
-export { getAllEmployees, addNewEmployee, updateEmployee };
+const deleteEmployee = async (employeeId: string) => {
+  return await Employee.findByIdAndDelete(employeeId);
+};
+
+export { getAllEmployees, addNewEmployee, updateEmployee, deleteEmployee };
