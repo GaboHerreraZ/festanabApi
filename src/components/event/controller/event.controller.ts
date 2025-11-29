@@ -10,14 +10,18 @@ import {
   getAllCustomerQuotes,
   deleteCustomerQuote,
   getCustomerQuoteById,
+  deleteEvent,
+  deleteCustomerQuoteByEventId,
 } from "../service/event.service";
 import { IEvent } from "../model/event.model";
 import {
   addNewEventDetail,
+  deleteEventDetail,
   getEventDetailByEventId,
 } from "../service/event-detail.service";
 import { IEventDetail } from "../model/event-detail.model";
 import mongoose, { Types } from "mongoose";
+import { deleteHourByEventId } from "../service/hour.service";
 
 const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -34,11 +38,33 @@ const getEventById = async (_: Request, res: Response, next: NextFunction) => {
 
 const getEvents = async (_: Request, res: Response, next: NextFunction) => {
   try {
-    const events = await getAllEvent();
+    const { status } = _.params;
+    const events = await getAllEvent(status);
 
     res.status(201).json({
       data: events,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteEventById = async (
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = _.params;
+    await deleteEvent(id);
+
+    await deleteHourByEventId(id);
+
+    await deleteEventDetail(id);
+
+    await deleteCustomerQuoteByEventId(id);
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -271,4 +297,5 @@ export {
   deleteQuoteById,
   getQuoteById,
   updateEventStatusById,
+  deleteEventById,
 };

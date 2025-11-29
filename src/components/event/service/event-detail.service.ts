@@ -290,6 +290,10 @@ const updateAiuSection = async (sectionId: string, items: any[]) => {
   return eventDetail;
 };
 
+const deleteEventDetail = async (eventId: string) => {
+  return await EventDetail.deleteMany({ eventId });
+};
+
 export {
   getEventDetailByEventId,
   addSection,
@@ -301,4 +305,5 @@ export {
   updateAiuSection,
   deleteSection,
   addNewEventDetail,
+  deleteEventDetail,
 };

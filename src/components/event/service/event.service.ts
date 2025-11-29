@@ -9,8 +9,12 @@ const getEventId = async (eventId: string) => {
   return await Event.findById(eventId);
 };
 
-const getAllEvent = async () => {
-  return await Event.find().sort({ date: -1 });
+const getAllEvent = async (status: string) => {
+  return await Event.find({ status }).sort({ date: -1 });
+};
+
+const deleteEvent = async (eventId: string) => {
+  return await Event.findByIdAndDelete(eventId);
 };
 
 const addNewEvent = async (
@@ -121,6 +125,10 @@ const getCustomerQuoteById = async (quoteId: string) => {
   return await CustomerQuote.findById(quoteId);
 };
 
+const deleteCustomerQuoteByEventId = async (eventId: string) => {
+  return await CustomerQuote.deleteMany({ eventId });
+};
+
 export {
   getAllEvent,
   addNewEvent,
@@ -132,4 +140,6 @@ export {
   getAllCustomerQuotes,
   deleteCustomerQuote,
   getCustomerQuoteById,
+  deleteEvent,
+  deleteCustomerQuoteByEventId,
 };

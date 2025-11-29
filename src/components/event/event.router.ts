@@ -11,6 +11,7 @@ import {
   deleteQuoteById,
   getQuoteById,
   updateEventStatusById,
+  deleteEventById,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -35,7 +36,10 @@ import {
 
 const eventRouter: Router = Router();
 
-eventRouter.get("/get-events", verifyToken, getEvents);
+eventRouter.get("/get-events/:status", verifyToken, getEvents);
+
+eventRouter.delete("/delete-event/:id", verifyToken, deleteEventById);
+
 eventRouter.get("/get-event-by-id/:id", verifyToken, getEventById);
 
 eventRouter.post("/add-edit-event", verifyToken, addEditEvent);
@@ -45,6 +49,7 @@ eventRouter.get("/event-detail/:eventId", getEventDetail);
 eventRouter.post("/event-detail/update-status", updateEventStatusById);
 
 eventRouter.post("/event-detail/:eventId/section", verifyToken, createSection);
+
 eventRouter.post(
   "/event-detail/:eventId/section/:sectionId/item",
   verifyToken,

@@ -16,4 +16,14 @@ const deleteHour = async (hourId: string) => {
   return await Hour.findByIdAndDelete(hourId);
 };
 
-export { createHour, updateHour, getEventHourById, deleteHour };
+const deleteHourByEventId = async (eventId: string) => {
+  return await Hour.deleteMany({ eventId });
+};
+
+export {
+  createHour,
+  updateHour,
+  getEventHourById,
+  deleteHour,
+  deleteHourByEventId,
+};
