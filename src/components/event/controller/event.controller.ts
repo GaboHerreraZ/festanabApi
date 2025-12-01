@@ -21,8 +21,21 @@ import {
 } from "../service/event-detail.service";
 import { IEventDetail } from "../model/event-detail.model";
 import mongoose, { Types } from "mongoose";
-import { deleteHourByEventId } from "../service/hour.service";
-import { deleteEmployeeServiceByEventId } from "../service/employee-service.service";
+import {
+  deleteHourByEventId,
+  getEmployeeWithRecords,
+  getEventHourById,
+} from "../service/hour.service";
+import {
+  deleteEmployeeServiceByEventId,
+  getTotalEmployeeServices,
+} from "../service/employee-service.service";
+import {
+  createEventBilling,
+  deleteEventBillingByEventId,
+  getEventBillingById,
+} from "../service/event-billing.service";
+import { IEventBilling } from "../model/event-billing.model";
 
 const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -289,6 +302,92 @@ const getQuoteById = async (
   }
 };
 
+const setEventBilling = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const event = await getEventId(id);
+
+    const billing = await getEmployeeWithRecords(id);
+
+    const settle = {
+      event: {
+        ...event,
+        billing,
+      },
+    };
+
+    await deleteEventBillingByEventId(id);
+
+    const eventBilling = await createEventBilling(
+      settle as any as IEventBilling
+    );
+
+    res.status(201).json({ data: billing });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getEventBilling = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const quote = await getEventBillingById(id);
+    res.status(201).json({ data: quote });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const groupByEmployee = (event: any) => {
+  const result: any = {};
+
+  // --- Agrupar HOURS ---
+  for (const h of event.hours ?? []) {
+    const id = h.employeeId;
+
+    if (!result[id]) {
+      result[id] = {
+        employeeId: id,
+        employee: h.employee,
+        cc: h.cc,
+        hours: [],
+        services: [],
+      };
+    }
+
+    result[id].hours.push(...h.records);
+  }
+
+  // --- Agrupar SERVICES ---
+  for (const s of event.services ?? []) {
+    const id = s.employeeId;
+
+    if (!result[id]) {
+      result[id] = {
+        employeeId: id,
+        employee: s.employee,
+        cc: s.cc,
+        hours: [],
+        services: [],
+      };
+    }
+
+    result[id].services.push(...s.services);
+  }
+
+  // Convertir objeto → array
+  return Object.values(result);
+};
+
 export {
   getEvents,
   addEditEvent,
@@ -301,4 +400,6 @@ export {
   getQuoteById,
   updateEventStatusById,
   deleteEventById,
+  setEventBilling,
+  getEventBilling,
 };

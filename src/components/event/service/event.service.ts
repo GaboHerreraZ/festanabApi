@@ -6,7 +6,7 @@ import { Hour } from "../model/hour.model";
 import { CustomerQuote, ICustomerQuote } from "../model/customer-quote.model";
 
 const getEventId = async (eventId: string) => {
-  return await Event.findById(eventId);
+  return await Event.findById(eventId).lean();
 };
 
 const getAllEvent = async (status: string) => {

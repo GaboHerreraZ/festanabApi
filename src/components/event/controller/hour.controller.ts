@@ -38,8 +38,6 @@ const addNewHour = async (req: Request, res: Response, next: NextFunction) => {
 
     let hourUpdated = getTotalHours(data);
 
-    console.log("hourUpdated", hourUpdated);
-
     hourUpdated = buildRates(hourUpdated, getTotalDays, workParams, settings);
 
     const { _id, ...rest } = hourUpdated;

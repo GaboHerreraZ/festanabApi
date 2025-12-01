@@ -12,6 +12,8 @@ import {
   getQuoteById,
   updateEventStatusById,
   deleteEventById,
+  setEventBilling,
+  getEventBilling,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -43,6 +45,10 @@ import {
 const eventRouter: Router = Router();
 
 eventRouter.get("/get-events/:status", verifyToken, getEvents);
+
+eventRouter.get("/event-billing/:id", verifyToken, setEventBilling);
+
+eventRouter.get("/get-event-billing/:id", verifyToken, getEventBilling);
 
 eventRouter.delete("/delete-event/:id", verifyToken, deleteEventById);
 
