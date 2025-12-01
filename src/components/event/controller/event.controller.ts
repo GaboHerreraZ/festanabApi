@@ -22,6 +22,7 @@ import {
 import { IEventDetail } from "../model/event-detail.model";
 import mongoose, { Types } from "mongoose";
 import { deleteHourByEventId } from "../service/hour.service";
+import { deleteEmployeeServiceByEventId } from "../service/employee-service.service";
 
 const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -63,6 +64,8 @@ const deleteEventById = async (
     await deleteEventDetail(id);
 
     await deleteCustomerQuoteByEventId(id);
+
+    await deleteEmployeeServiceByEventId(id);
 
     res.status(204).send();
   } catch (error) {

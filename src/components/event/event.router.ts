@@ -33,6 +33,12 @@ import {
   editHour,
   getHoursByEvent,
 } from "./controller/hour.controller";
+import {
+  getEmployeeServiceById,
+  addNewEmployeeService,
+  deleteEmployeeServiceById,
+  editEmployeeService,
+} from "./controller/employee-service.controller";
 
 const eventRouter: Router = Router();
 
@@ -98,5 +104,20 @@ eventRouter.get(
 eventRouter.delete("/delete-customer-quote/:id", verifyToken, deleteQuoteById);
 
 eventRouter.get("/get-customer-quote/:id", getQuoteById);
+
+//employee-service
+
+eventRouter.get(
+  "/get-employee-services-by-event-id/:eventId",
+  verifyToken,
+  getEmployeeServiceById
+);
+eventRouter.post("/add-employee-service", verifyToken, addNewEmployeeService);
+eventRouter.post("/edit-employee-service", verifyToken, editEmployeeService);
+eventRouter.delete(
+  "/delete-employee-service/:id",
+  verifyToken,
+  deleteEmployeeServiceById
+);
 
 export default eventRouter;
