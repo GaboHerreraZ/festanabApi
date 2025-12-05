@@ -7,8 +7,8 @@ export const buildWorkParams = (settings: ISetting) => {
       workingDays: [0, 1, 2, 3, 4, 5, 6], // Monday to Saturday
     },
     timeRanges: {
-      dayShift: { start: 6, end: 18 }, // 6:00 AM – 6:00 PM
-      nightShift: { start: 18, end: 6 }, // 6:00 PM – 6:00 AM (next day)
+      dayShift: { start: 6, end: 19 }, // 6:00 AM – 6:00 PM
+      nightShift: { start: 19, end: 6 }, // 6:00 PM – 6:00 AM (next day)
     },
     rates: {
       ordinary: 1,
