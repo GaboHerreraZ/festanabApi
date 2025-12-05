@@ -1,5 +1,9 @@
 import { ISetting } from "../components/setting/model/setting.model";
 
+const roundToThousands = (value: number) => {
+  return Math.round(value / 1000) * 1000;
+};
+
 export const buildRates = (
   hourUpdated: any,
   getTotalDays: any,
@@ -11,40 +15,47 @@ export const buildRates = (
   return {
     ...rest,
     hrsOrd: getTotalDays.ordinaryDayHours,
-    valHrsOrd: getTotalDays.ordinaryDayHours * rest.hourPrice,
+    valHrsOrd: roundToThousands(getTotalDays.ordinaryDayHours * rest.hourPrice),
     hrsExtDia: getTotalDays.extraDayHours,
-    valExtDia:
-      getTotalDays.extraDayHours * rest.hourPrice * workParams.rates.extraDay,
+    valExtDia: roundToThousands(
+      getTotalDays.extraDayHours * rest.hourPrice * workParams.rates.extraDay
+    ),
     hrsNoc: getTotalDays.ordinaryNightHours,
-    valHrsNoc:
+    valHrsNoc: roundToThousands(
       getTotalDays.ordinaryNightHours *
-      rest.hourPrice *
-      workParams.rates.ordinaryNight,
+        rest.hourPrice *
+        workParams.rates.ordinaryNight
+    ),
     hrsExtNoc: getTotalDays.extraNightHours,
-    valExtNoc:
+    valExtNoc: roundToThousands(
       getTotalDays.extraNightHours *
-      rest.hourPrice *
-      workParams.rates.extraNight,
+        rest.hourPrice *
+        workParams.rates.extraNight
+    ),
     hrsDomDia: getTotalDays.sundayDayHours,
-    valDomDia:
-      getTotalDays.sundayDayHours * rest.hourPrice * workParams.rates.sundayDay,
+    valDomDia: roundToThousands(
+      getTotalDays.sundayDayHours * rest.hourPrice * workParams.rates.sundayDay
+    ),
     hrsExtDomDia: getTotalDays.extraSundayDayHours,
-    valExtDomDia:
+    valExtDomDia: roundToThousands(
       getTotalDays.extraSundayDayHours *
-      rest.hourPrice *
-      workParams.rates.extraSundayDay,
+        rest.hourPrice *
+        workParams.rates.extraSundayDay
+    ),
     hrsDomNoc: getTotalDays.sundayNightHours,
-    valDomNoc:
+    valDomNoc: roundToThousands(
       getTotalDays.sundayNightHours *
-      rest.hourPrice *
-      workParams.rates.sundayNight,
+        rest.hourPrice *
+        workParams.rates.sundayNight
+    ),
     hrsExtDomNoc: getTotalDays.extraSundayNightHours,
-    valExtDomNoc:
+    valExtDomNoc: roundToThousands(
       getTotalDays.extraSundayNightHours *
-      rest.hourPrice *
-      workParams.rates.extraSundayNight,
+        rest.hourPrice *
+        workParams.rates.extraSundayNight
+    ),
     auxiliaryTrasport: hasHour ? 0 : settings.auxiliaryTrasport,
-    total:
+    total: roundToThousands(
       rest.hourPrice *
         (getTotalDays.ordinaryDayHours +
           getTotalDays.extraDayHours * workParams.rates.extraDay +
@@ -55,6 +66,7 @@ export const buildRates = (
           getTotalDays.extraSundayDayHours * workParams.rates.extraSundayDay +
           getTotalDays.extraSundayNightHours *
             workParams.rates.extraSundayNight) +
-      settings.auxiliaryTrasport,
+        settings.auxiliaryTrasport
+    ),
   };
 };

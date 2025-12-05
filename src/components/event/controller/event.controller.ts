@@ -24,16 +24,13 @@ import mongoose, { Types } from "mongoose";
 import {
   deleteHourByEventId,
   getEmployeeWithRecords,
-  getEventHourById,
 } from "../service/hour.service";
-import {
-  deleteEmployeeServiceByEventId,
-  getTotalEmployeeServices,
-} from "../service/employee-service.service";
+import { deleteEmployeeServiceByEventId } from "../service/employee-service.service";
 import {
   createEventBilling,
   deleteEventBillingByEventId,
   getEventBillingById,
+  getEventBillingByEmployee,
 } from "../service/event-billing.service";
 import { IEventBilling } from "../model/event-billing.model";
 
@@ -347,6 +344,20 @@ const getEventBilling = async (
   }
 };
 
+const getEmployeeBilling = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { eventId, employeeId } = req.params;
+    const quote = await getEventBillingByEmployee(eventId, employeeId);
+    res.status(201).json({ data: quote });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const groupByEmployee = (event: any) => {
   const result: any = {};
 
@@ -402,4 +413,5 @@ export {
   deleteEventById,
   setEventBilling,
   getEventBilling,
+  getEmployeeBilling,
 };

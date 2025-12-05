@@ -16,4 +16,35 @@ const getEventBillingById = async (eventId: string) => {
   return await EventBilling.findOne({ "event._id": eventId });
 };
 
-export { createEventBilling, deleteEventBillingByEventId, getEventBillingById };
+const getEventBillingByEmployee = async (
+  eventId: string,
+  employeeId: string
+) => {
+  return EventBilling.aggregate([
+    {
+      $match: {
+        "event._id": new mongoose.Types.ObjectId(eventId),
+      },
+    },
+    {
+      $addFields: {
+        "event.billing": {
+          $filter: {
+            input: "$event.billing",
+            as: "b",
+            cond: {
+              $eq: ["$$b.employeeId", new mongoose.Types.ObjectId(employeeId)],
+            },
+          },
+        },
+      },
+    },
+  ]);
+};
+
+export {
+  createEventBilling,
+  deleteEventBillingByEventId,
+  getEventBillingById,
+  getEventBillingByEmployee,
+};

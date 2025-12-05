@@ -14,6 +14,7 @@ import {
   deleteEventById,
   setEventBilling,
   getEventBilling,
+  getEmployeeBilling,
 } from "./controller/event.controller";
 import {
   createSection,
@@ -47,6 +48,11 @@ const eventRouter: Router = Router();
 eventRouter.get("/get-events/:status", verifyToken, getEvents);
 
 eventRouter.get("/event-billing/:id", verifyToken, setEventBilling);
+
+eventRouter.get(
+  "/get-employee-billing/:eventId/:employeeId",
+  getEmployeeBilling
+);
 
 eventRouter.get("/get-event-billing/:id", verifyToken, getEventBilling);
 

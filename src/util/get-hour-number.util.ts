@@ -1,10 +1,17 @@
 export const getHourNumber = (time: string) => {
-  const hour = new Date(time);
+  const date = new Date(time);
 
-  // Obtener horas y minutos locales
-  const horas = hour.getHours();
-  const minutos = hour.getMinutes();
+  const formatter = new Intl.DateTimeFormat("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "America/Bogota",
+  });
 
-  // Convertir minutos a parte decimal
-  return horas + minutos / 60;
+  const parts = formatter.formatToParts(date);
+
+  const hours = Number(parts.find((p) => p.type === "hour")?.value || 0);
+  const minutes = Number(parts.find((p) => p.type === "minute")?.value || 0);
+
+  return hours + minutes / 60;
 };
