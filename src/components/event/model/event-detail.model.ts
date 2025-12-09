@@ -49,7 +49,7 @@ const EventDetailSchema: Schema<IEventDetail> = new Schema({
           disabled: { type: Boolean, default: false },
           owner: {
             type: String,
-            required: true,
+            required: false,
             enum: ["Propio", "Tercero"],
           },
         },
