@@ -6,7 +6,7 @@ export interface IBill extends Document {
   name: string;
   value: number;
   paymentType: "Efectivo" | "Transferencia";
-  paymentCompany: "Bancolombia" | "Nequi" | null;
+  paymentCompany: "Bancolombia" | "Nequi" | "Banco de Bogotá" | null;
   observations: string;
   conciliation: boolean;
   billType: string;
@@ -28,7 +28,7 @@ const BillSchema: Schema<IBill> = new Schema({
   },
   paymentCompany: {
     type: String,
-    enum: ["Bancolombia", "Nequi", null],
+    enum: ["Bancolombia", "Nequi", "Banco de Bogotá", null],
     default: null,
   },
   observations: { type: String, required: false },
