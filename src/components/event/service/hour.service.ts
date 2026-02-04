@@ -25,7 +25,7 @@ async function getEmployeeWithRecords(eventId: string) {
   const id = new mongoose.Types.ObjectId(eventId);
 
   return await Hour.aggregate([
-    // --- HORAS ---
+    // Empleados con horas
     {
       $match: { eventId: id },
     },
@@ -35,17 +35,67 @@ async function getEmployeeWithRecords(eventId: string) {
         employeeId: { $first: "$employeeId" },
         employee: { $first: "$employee" },
         cc: { $first: "$cc" },
-        hours: {
-          $push: "$$ROOT",
-        },
-        totalHours: { $sum: "$total" },
+      },
+    },
+
+    // Unir empleados que solo tienen servicios (sin horas)
+    {
+      $unionWith: {
+        coll: "employeeservices",
+        pipeline: [
+          { $match: { eventId: id } },
+          {
+            $group: {
+              _id: "$employeeId",
+              employeeId: { $first: "$employeeId" },
+              employee: { $first: "$employee" },
+              cc: { $first: "$cc" },
+            },
+          },
+        ],
+      },
+    },
+
+    // Agrupar para obtener empleados únicos
+    {
+      $group: {
+        _id: "$employeeId",
+        employeeId: { $first: "$employeeId" },
+        employee: { $first: "$employee" },
+        cc: { $first: "$cc" },
+      },
+    },
+
+    // --- JUNTAR HORAS ---
+    {
+      $lookup: {
+        from: "hours",
+        let: { empId: "$employeeId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$eventId", id] },
+                  { $eq: ["$employeeId", "$$empId"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "hours",
+      },
+    },
+    {
+      $addFields: {
+        totalHours: { $sum: "$hours.total" },
       },
     },
 
     // --- JUNTAR SERVICIOS ---
     {
       $lookup: {
-        from: "employeeservices", // nombre de la colección
+        from: "employeeservices",
         let: { empId: "$employeeId" },
         pipeline: [
           {
@@ -62,8 +112,6 @@ async function getEmployeeWithRecords(eventId: string) {
         as: "services",
       },
     },
-
-    // Total de servicios
     {
       $addFields: {
         totalServices: { $sum: "$services.total" },
