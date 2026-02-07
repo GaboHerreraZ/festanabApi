@@ -48,6 +48,13 @@ const getEventDetailByEventId = async (eventId: string) => {
               costPrice: 0,
               owner: "Propio",
             },
+            {
+              _id: new mongoose.Types.ObjectId(),
+              name: "Bono",
+              rentalPrice: 0,
+              costPrice: 0,
+              owner: "Propio",
+            },
           ],
         },
         {
