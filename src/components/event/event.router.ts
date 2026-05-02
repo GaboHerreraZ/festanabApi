@@ -35,6 +35,8 @@ import {
   deleteHourById,
   editHour,
   getHoursByEvent,
+  setApprovalHour,
+  getEventsByEmployeeCc,
 } from "./controller/hour.controller";
 import {
   getEmployeeServiceById,
@@ -42,6 +44,17 @@ import {
   deleteEmployeeServiceById,
   editEmployeeService,
 } from "./controller/employee-service.controller";
+import {
+  addEventEmployee,
+  getEventEmployees,
+  deleteEventEmployee,
+} from "./controller/event-employee.controller";
+import {
+  dashboardCards,
+  dashboardMonthlyEvents,
+  dashboardMonthlyUtility,
+  dashboardMonthlyHours,
+} from "./controller/dashboard.controller";
 
 const eventRouter: Router = Router();
 
@@ -91,8 +104,23 @@ eventRouter.get(
 eventRouter.post("/add-hour", verifyToken, addNewHour);
 eventRouter.post("/edit-hour", verifyToken, editHour);
 eventRouter.delete("/delete-hour/:id", verifyToken, deleteHourById);
+eventRouter.patch("/set-hour-approval/:id", verifyToken, setApprovalHour);
+eventRouter.get("/get-employee-events-by-cc/:cc", getEventsByEmployeeCc);
 
 eventRouter.get("/get-totals-by-event/:eventId", getTotalsByEventId);
+
+eventRouter.get("/dashboard/cards", verifyToken, dashboardCards);
+eventRouter.get(
+  "/dashboard/monthly-events",
+  verifyToken,
+  dashboardMonthlyEvents
+);
+eventRouter.get(
+  "/dashboard/monthly-utility",
+  verifyToken,
+  dashboardMonthlyUtility
+);
+eventRouter.get("/dashboard/monthly-hours", verifyToken, dashboardMonthlyHours);
 
 eventRouter.post("/edit-section", verifyToken, editSectionDescriptionById);
 
@@ -130,6 +158,19 @@ eventRouter.delete(
   "/delete-employee-service/:id",
   verifyToken,
   deleteEmployeeServiceById
+);
+
+//event-employee
+eventRouter.get(
+  "/get-event-employees/:eventId",
+  verifyToken,
+  getEventEmployees
+);
+eventRouter.post("/add-event-employee", verifyToken, addEventEmployee);
+eventRouter.delete(
+  "/delete-event-employee/:id",
+  verifyToken,
+  deleteEventEmployee
 );
 
 export default eventRouter;

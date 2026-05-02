@@ -4,7 +4,10 @@ import {
   updateHour,
   getEventHourById,
   deleteHour,
+  setHourApproval,
+  getEmployeeEventsByCc,
 } from "../service/hour.service";
+import { AuthenticatedRequest } from "../../../middleware/verifyToken";
 import { IHour } from "../model/hour.model";
 import { getSetting } from "../../setting/service/setting.service";
 import { ISetting } from "../../setting/model/setting.model";
@@ -77,6 +80,11 @@ const editHour = async (req: Request, res: Response, next: NextFunction) => {
 
     hourUpdated = buildRates(hourUpdated, getTotalDays, workParams, settings);
 
+    hourUpdated.observations = null;
+    hourUpdated.approved = false;
+    hourUpdated.approvedBy = null;
+    hourUpdated.approvedAt = null;
+
     const hour = await updateHour(hourUpdated);
 
     res.status(201).json({ data: hour });
@@ -101,6 +109,22 @@ const getHoursByEvent = async (
   }
 };
 
+const getEventsByEmployeeCc = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { cc } = req.params;
+
+    const events = await getEmployeeEventsByCc(cc);
+
+    res.status(200).json({ data: events });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteHourById = async (
   req: Request,
   res: Response,
@@ -117,7 +141,46 @@ const deleteHourById = async (
   }
 };
 
-export { addNewHour, editHour, getHoursByEvent, deleteHourById };
+const setApprovalHour = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { approved, observations } = req.body;
+
+    if (typeof approved !== "boolean") {
+      res.status(400).json({ message: "'approved' must be a boolean" });
+      return;
+    }
+
+    const hour = await setHourApproval(
+      id,
+      approved,
+      req.user?.id,
+      observations ?? null
+    );
+
+    if (!hour) {
+      res.status(404).json({ message: "Hour not found" });
+      return;
+    }
+
+    res.status(200).json({ data: hour });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  addNewHour,
+  editHour,
+  getHoursByEvent,
+  deleteHourById,
+  setApprovalHour,
+  getEventsByEmployeeCc,
+};
 
 const getTotalHours = (hour: any) => {
   const { _id, date, startTime, endTime, hourPrice, ...rest } = hour;

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Hour, IHour } from "../model/hour.model";
+import { Employee } from "../../employee/model/employee.model";
 
 const createHour = async (hour: IHour) => {
   return await Hour.create(hour);
@@ -9,12 +10,120 @@ const updateHour = async (hour: IHour) => {
   return await Hour.findByIdAndUpdate(hour._id, hour, { new: true });
 };
 
+const getEmployeeEventsByCc = async (cc: string) => {
+  const ccNumber = Number(cc);
+
+  return await Employee.aggregate([
+    { $match: { cc: ccNumber } },
+    {
+      $lookup: {
+        from: "eventemployees",
+        localField: "_id",
+        foreignField: "employeeId",
+        as: "assignments",
+      },
+    },
+    { $unwind: "$assignments" },
+    {
+      $lookup: {
+        from: "events",
+        localField: "assignments.eventId",
+        foreignField: "_id",
+        as: "event",
+      },
+    },
+    { $unwind: { path: "$event", preserveNullAndEmptyArrays: false } },
+    { $match: { "event.status": "approved" } },
+    {
+      $lookup: {
+        from: "hours",
+        let: { eventId: "$event._id", employeeId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$eventId", "$$eventId"] },
+                  { $eq: ["$employeeId", "$$employeeId"] },
+                ],
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              startTime: 1,
+              endTime: 1,
+              approved: 1,
+              approvedAt: 1,
+              observations: 1,
+            },
+          },
+        ],
+        as: "hours",
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        eventId: "$event._id",
+        employeeId: "$_id",
+        employee: "$name",
+        cc: "$cc",
+        hourPrice: "$hourPrice",
+        owner: "$event.owner",
+        description: "$event.description",
+        location: "$event.location",
+        date: "$event.date",
+        status: "$event.status",
+        assignedAt: "$assignments.assignedAt",
+        hours: 1,
+      },
+    },
+  ]);
+};
+
 const getEventHourById = async (eventId: string) => {
-  return await Hour.find({ eventId });
+  const id = new mongoose.Types.ObjectId(eventId);
+
+  return await Hour.aggregate([
+    { $match: { eventId: id } },
+    {
+      $group: {
+        _id: "$employeeId",
+        employeeId: { $first: "$employeeId" },
+        employee: { $first: "$employee" },
+        cc: { $first: "$cc" },
+        horas: { $push: "$$ROOT" },
+      },
+    },
+  ]);
 };
 
 const deleteHour = async (hourId: string) => {
   return await Hour.findByIdAndDelete(hourId);
+};
+
+const setHourApproval = async (
+  hourId: string,
+  approved: boolean,
+  userId: string,
+  observations: string | null
+) => {
+  const trimmed = observations?.trim() || null;
+  const finalObservations =
+    approved && !trimmed ? "Horas aprobadas" : trimmed;
+
+  return await Hour.findByIdAndUpdate(
+    hourId,
+    {
+      approved,
+      approvedBy: userId,
+      approvedAt: new Date(),
+      observations: finalObservations,
+    },
+    { new: true }
+  );
 };
 
 const deleteHourByEventId = async (eventId: string) => {
@@ -177,4 +286,6 @@ export {
   deleteHour,
   deleteHourByEventId,
   getEmployeeWithRecords,
+  setHourApproval,
+  getEmployeeEventsByCc,
 };

@@ -38,6 +38,11 @@ export interface IHour extends Document {
   auxiliaryTrasport: number;
 
   total: number;
+
+  approved: boolean;
+  approvedBy: string | null;
+  approvedAt: Date | null;
+  observations: string | null;
 }
 
 const hourSchema: Schema = new Schema({
@@ -80,6 +85,11 @@ const hourSchema: Schema = new Schema({
   auxiliaryTrasport: { type: Number, default: 0 },
 
   total: { type: Number, default: 0 },
+
+  approved: { type: Boolean, default: false },
+  approvedBy: { type: String, default: null },
+  approvedAt: { type: Date, default: null },
+  observations: { type: String, default: null },
 });
 
 export const Hour = mongoose.model<IHour>("Hour", hourSchema);

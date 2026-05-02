@@ -26,7 +26,7 @@ const EventSchema: Schema<IEvent> = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ["inQuote", "pending", "completed"],
+    enum: ["inQuote","approved", "pending", "completed"],
     default: "inQuote",
   },
 });
