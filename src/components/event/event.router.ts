@@ -101,7 +101,7 @@ eventRouter.get(
   verifyToken,
   getHoursByEvent
 );
-eventRouter.post("/add-hour", verifyToken, addNewHour);
+eventRouter.post("/add-hour", addNewHour);
 eventRouter.post("/edit-hour", verifyToken, editHour);
 eventRouter.delete("/delete-hour/:id", verifyToken, deleteHourById);
 eventRouter.patch("/set-hour-approval/:id", verifyToken, setApprovalHour);
