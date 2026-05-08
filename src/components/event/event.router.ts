@@ -103,7 +103,7 @@ eventRouter.get(
 );
 eventRouter.post("/add-hour", addNewHour);
 eventRouter.post("/edit-hour", verifyToken, editHour);
-eventRouter.delete("/delete-hour/:id", verifyToken, deleteHourById);
+eventRouter.delete("/delete-hour/:id", deleteHourById);
 eventRouter.patch("/set-hour-approval/:id", verifyToken, setApprovalHour);
 eventRouter.get("/get-employee-events-by-cc/:cc", getEventsByEmployeeCc);
 
