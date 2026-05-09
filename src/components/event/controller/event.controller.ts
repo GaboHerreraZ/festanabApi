@@ -47,10 +47,11 @@ const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getEvents = async (_: Request, res: Response, next: NextFunction) => {
+const getEvents = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { status } = _.params;
-    const events = await getAllEvent(status);
+    const status = req.query.status as string | undefined;
+    const search = req.query.search as string | undefined;
+    const events = await getAllEvent(status, search);
 
     res.status(201).json({
       data: events,

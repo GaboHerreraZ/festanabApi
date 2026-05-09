@@ -9,8 +9,17 @@ const getEventId = async (eventId: string) => {
   return await Event.findById(eventId).lean();
 };
 
-const getAllEvent = async (status: string) => {
-  return await Event.find({ status }).sort({ date: -1 });
+const getAllEvent = async (status?: string, search?: string) => {
+  const query: any = {};
+
+  if (status) query.status = status;
+
+  if (search) {
+    const regex = new RegExp(search, "i");
+    query.$or = [{ owner: regex }, { description: regex }];
+  }
+
+  return await Event.find(query).sort({ date: -1 });
 };
 
 const deleteEvent = async (eventId: string) => {
