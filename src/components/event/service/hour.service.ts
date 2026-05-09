@@ -10,6 +10,29 @@ const updateHour = async (hour: IHour) => {
   return await Hour.findByIdAndUpdate(hour._id, hour, { new: true });
 };
 
+const findOverlappingHour = async (params: {
+  eventId: string | mongoose.Types.ObjectId;
+  employeeId: string | mongoose.Types.ObjectId;
+  startTime: Date;
+  endTime: Date;
+  excludeId?: string | mongoose.Types.ObjectId;
+}) => {
+  const { eventId, employeeId, startTime, endTime, excludeId } = params;
+
+  const query: any = {
+    eventId,
+    employeeId,
+    endTime: { $ne: null, $gt: startTime },
+    startTime: { $lt: endTime },
+  };
+
+  if (excludeId) {
+    query._id = { $ne: excludeId };
+  }
+
+  return await Hour.findOne(query);
+};
+
 const getEmployeeEventsByCc = async (cc: string) => {
   const ccNumber = Number(cc);
 
@@ -288,4 +311,5 @@ export {
   getEmployeeWithRecords,
   setHourApproval,
   getEmployeeEventsByCc,
+  findOverlappingHour,
 };

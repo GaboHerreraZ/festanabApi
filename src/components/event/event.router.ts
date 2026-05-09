@@ -37,6 +37,7 @@ import {
   getHoursByEvent,
   setApprovalHour,
   getEventsByEmployeeCc,
+  debugClassifyHours,
 } from "./controller/hour.controller";
 import {
   getEmployeeServiceById,
@@ -106,6 +107,7 @@ eventRouter.post("/edit-hour", verifyToken, editHour);
 eventRouter.delete("/delete-hour/:id", deleteHourById);
 eventRouter.patch("/set-hour-approval/:id", verifyToken, setApprovalHour);
 eventRouter.get("/get-employee-events-by-cc/:cc", getEventsByEmployeeCc);
+eventRouter.post("/debug-classify-hours", debugClassifyHours);
 
 eventRouter.get("/get-totals-by-event/:eventId", getTotalsByEventId);
 
