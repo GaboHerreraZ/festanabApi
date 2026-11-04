@@ -56,6 +56,10 @@ import {
   dashboardMonthlyUtility,
   dashboardMonthlyHours,
 } from "./controller/dashboard.controller";
+import {
+  setPaymentReceipt,
+  removePaymentReceipt,
+} from "./controller/payment-receipt.controller";
 
 const eventRouter: Router = Router();
 
@@ -173,6 +177,18 @@ eventRouter.delete(
   "/delete-event-employee/:id",
   verifyToken,
   deleteEventEmployee
+);
+
+//payment-receipt
+eventRouter.post(
+  "/payment-receipt/:eventId/:employeeId",
+  verifyToken,
+  setPaymentReceipt
+);
+eventRouter.delete(
+  "/payment-receipt/:eventId/:employeeId",
+  verifyToken,
+  removePaymentReceipt
 );
 
 export default eventRouter;

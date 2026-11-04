@@ -33,6 +33,11 @@ import {
   getEventBillingByEmployee,
 } from "../service/event-billing.service";
 import { IEventBilling } from "../model/event-billing.model";
+import {
+  deletePaymentReceiptsByEventId,
+  getPaymentReceiptsByEventId,
+} from "../service/payment-receipt.service";
+import { removeReceiptObjects } from "../service/payment-receipt-storage.service";
 
 const getEventById = async (_: Request, res: Response, next: NextFunction) => {
   try {
@@ -77,6 +82,18 @@ const deleteEventById = async (
     await deleteCustomerQuoteByEventId(id);
 
     await deleteEmployeeServiceByEventId(id);
+
+    const receipts = await getPaymentReceiptsByEventId(id);
+
+    if (receipts.length) {
+      try {
+        await removeReceiptObjects(receipts.map((receipt) => receipt.path));
+      } catch (error) {
+        console.error("No se pudieron borrar los comprobantes:", error);
+      }
+
+      await deletePaymentReceiptsByEventId(id);
+    }
 
     res.status(204).send();
   } catch (error) {
@@ -338,6 +355,12 @@ const getEventBilling = async (
 ) => {
   try {
     const { id } = req.params;
+
+    if (!Types.ObjectId.isValid(id)) {
+      res.status(400).json({ message: "id debe ser un identificador válido" });
+      return;
+    }
+
     const quote = await getEventBillingById(id);
     res.status(201).json({ data: quote });
   } catch (error) {
@@ -352,6 +375,17 @@ const getEmployeeBilling = async (
 ) => {
   try {
     const { eventId, employeeId } = req.params;
+
+    if (
+      !Types.ObjectId.isValid(eventId) ||
+      !Types.ObjectId.isValid(employeeId)
+    ) {
+      res.status(400).json({
+        message: "eventId y employeeId deben ser identificadores válidos",
+      });
+      return;
+    }
+
     const quote = await getEventBillingByEmployee(eventId, employeeId);
     res.status(201).json({ data: quote });
   } catch (error) {
