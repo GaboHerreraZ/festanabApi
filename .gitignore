@@ -3,3 +3,4 @@ process.env
 .env
 .vercel
 dist
+normalize-aux-backup-*.json
