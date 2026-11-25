@@ -1,7 +1,8 @@
 import { HourBreakdown } from "../shared/models/hour-break-down.model";
 
-const BOGOTA_TZ = "America/Bogota";
+export const BOGOTA_TZ = "America/Bogota";
 const STEP_MS = 15 * 60 * 1000; // 15 minutes
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const formatBogotaParts = (date: Date) => {
   const formatter = new Intl.DateTimeFormat("en-CA", {
@@ -111,18 +112,41 @@ export const classifyWorkedHoursV2 = (
   return result;
 };
 
+export const bogotaDayString = (date: Date): string =>
+  formatBogotaParts(date).dateStr;
+
 export const collectDateStringsBogota = (
   startTime: Date,
   endTime: Date
 ): string[] => {
-  const dates = new Set<string>();
   const startMs = startTime.getTime();
   const endMs = endTime.getTime();
 
-  for (let cursor = startMs; cursor <= endMs; cursor += STEP_MS) {
-    const { dateStr } = formatBogotaParts(new Date(cursor));
-    dates.add(dateStr);
+  if (isNaN(startMs) || isNaN(endMs)) return [];
+
+  // endMs is excluded, matching the classifier loop above: a shift that ends
+  // exactly at Bogota midnight works no minute of the new day, so it must not
+  // claim that day. Claiming it paid a second transport allowance.
+  const lastWorkedMs = Math.max(startMs, endMs - 1);
+  const lastDay = bogotaDayString(new Date(lastWorkedMs));
+
+  const dates: string[] = [];
+  const seen = new Set<string>();
+
+  // Walk calendar days instead of STEP_MS ticks: stepping 15 minutes drops the
+  // final day whenever the shift length is not a whole multiple of 15 minutes
+  // (22:05 -> 00:02 used to stop at 23:50 and report a single day).
+  // The upper bound on cursor is only a guard against a non-advancing step.
+  for (let cursor = startMs; cursor <= lastWorkedMs + DAY_MS; cursor += DAY_MS) {
+    const dateStr = bogotaDayString(new Date(cursor));
+
+    if (!seen.has(dateStr)) {
+      seen.add(dateStr);
+      dates.push(dateStr);
+    }
+
+    if (dateStr >= lastDay) break;
   }
 
-  return Array.from(dates);
+  return dates;
 };

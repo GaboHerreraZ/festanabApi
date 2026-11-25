@@ -38,11 +38,7 @@ const addNewHour = async (req: Request, res: Response, next: NextFunction) => {
     const workParams = buildWorkParams(settings as ISetting);
 
     let hourUpdated = getTotalHours(data);
-    hourUpdated = await computeHourTotals(
-      hourUpdated,
-      workParams,
-      settings as ISetting
-    );
+    hourUpdated = await computeHourTotals(hourUpdated, workParams);
 
     const { _id, ...rest } = hourUpdated;
 
@@ -73,11 +69,7 @@ const editHour = async (req: Request, res: Response, next: NextFunction) => {
     const workParams = buildWorkParams(settings as ISetting);
 
     let hourUpdated = getTotalHours(data);
-    hourUpdated = await computeHourTotals(
-      hourUpdated,
-      workParams,
-      settings as ISetting
-    );
+    hourUpdated = await computeHourTotals(hourUpdated, workParams);
 
     hourUpdated.observations = null;
     hourUpdated.approved = false;
@@ -207,9 +199,13 @@ const debugClassifyHours = async (
 
     const computed = await computeHourTotals(
       { startTime: start, endTime: end, hourPrice, date: start },
-      workParams,
-      settings as ISetting
+      workParams
     );
+
+    // No employee here, so the one-per-day rule cannot be applied: report the
+    // allowance this range would be worth on its own.
+    const coveredDays = collectDateStringsBogota(start, end);
+    const auxPerDay = (settings as ISetting).auxiliaryTrasport ?? 0;
 
     res.status(200).json({
       data: {
@@ -233,7 +229,8 @@ const debugClassifyHours = async (
         valDomNoc: computed.valDomNoc,
         hrsExtDomNoc: computed.hrsExtDomNoc,
         valExtDomNoc: computed.valExtDomNoc,
-        auxiliaryTrasport: computed.auxiliaryTrasport,
+        coveredDays,
+        auxiliaryTrasport: coveredDays.length * auxPerDay,
         total: computed.total,
       },
     });
@@ -261,11 +258,7 @@ const checkOverlap = async (data: any, excludeId?: string) => {
   });
 };
 
-const computeHourTotals = async (
-  hour: any,
-  workParams: any,
-  settings: ISetting
-) => {
+const computeHourTotals = async (hour: any, workParams: any) => {
   if (!hour.startTime || !hour.endTime) return hour;
 
   const start = new Date(hour.startTime);
@@ -286,24 +279,10 @@ const computeHourTotals = async (
     dayShift: workParams.timeRanges.dayShift,
   });
 
-  const computed = buildRates(
-    { ...hour, hasHour: false },
-    breakdown,
-    workParams,
-    settings
-  );
-
-  const daysCovered = dateStrings.length || 1;
-  const auxiliaryPerDay = settings.auxiliaryTrasport ?? 0;
-  const auxiliaryTotal = auxiliaryPerDay * daysCovered;
-
-  const baseTotalWithoutAux = computed.total - (computed.auxiliaryTrasport ?? 0);
-
-  return {
-    ...computed,
-    auxiliaryTrasport: auxiliaryTotal,
-    total: baseTotalWithoutAux + auxiliaryTotal,
-  };
+  // `total` is worked hours only. The transport allowance is owed once per
+  // employee per Bogota day, so it is resolved when the event is rolled up
+  // (transport-allowance.util.ts), not per record.
+  return buildRates({ ...hour, hasHour: false }, breakdown, workParams);
 };
 
 export {

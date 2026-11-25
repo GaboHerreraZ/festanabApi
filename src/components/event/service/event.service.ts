@@ -4,6 +4,7 @@ import { IEvent, Event } from "../model/event.model";
 import { Bill } from "../model/bill.model";
 import { Hour } from "../model/hour.model";
 import { CustomerQuote, ICustomerQuote } from "../model/customer-quote.model";
+import { getEventTransportAllowance } from "./hour.service";
 
 const getEventId = async (eventId: string) => {
   return await Event.findById(eventId).lean();
@@ -108,12 +109,18 @@ const getTotalsByEvent = async (eventId: string) => {
 
   const totalHours = hourTotals[0]?.totalHoursValue || 0;
 
+  // `total` on an Hour is worked hours only now, so the allowance has to be added
+  // back here or the event would under-report what the staff costs and the utility
+  // shown on the event detail screen would jump.
+  const transportAllowance = await getEventTransportAllowance(eventId);
+
   return {
     ...event,
     totalRentalPrice: rentalPrice,
     totalCostPrice: costPrice,
     totalBillValue: billValue,
-    totalHourCost: totalHours,
+    totalHourCost: totalHours + transportAllowance,
+    totalTransportAllowance: transportAllowance,
   };
 };
 

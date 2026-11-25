@@ -59,6 +59,12 @@ export interface IEmployee {
   grandTotal: number;
   totalServices: number;
   totalHours: number;
+  /** Bogota days this event pays the transport allowance for. */
+  transportDays: number;
+  /** transportDays * the allowance, already included in grandTotal. */
+  transportAllowance: number;
+  /** Days already carrying the allowance inside a record's total, not paid twice. */
+  legacyTransportDays: number;
   services: IServiceRecord[];
   hours: IHourRecord[];
 }
@@ -130,6 +136,9 @@ const EmployeeBillingSchema = new Schema<IEmployee>({
   grandTotal: Number,
   totalServices: Number,
   totalHours: Number,
+  transportDays: Number,
+  transportAllowance: Number,
+  legacyTransportDays: Number,
   hours: [HourRecordSchema],
   services: [ServiceRecordSchema],
 });

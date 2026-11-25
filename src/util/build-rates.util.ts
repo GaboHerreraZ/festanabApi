@@ -1,14 +1,16 @@
-import { ISetting } from "../components/setting/model/setting.model";
-
 const roundToThousands = (value: number) => {
   return Math.round(value / 1000) * 1000;
 };
 
+// The transport allowance is NOT computed here. It belongs to a (employee, day)
+// pair, not to a single hour record, so it is resolved per day when the event is
+// rolled up (see transport-allowance.util.ts). This function only prices worked
+// hours. `hasHour` is still destructured off so a client-sent value never
+// reaches the document.
 export const buildRates = (
   hourUpdated: any,
   getTotalDays: any,
-  workParams: any,
-  settings: ISetting
+  workParams: any
 ) => {
   const { hasHour, ...rest } = hourUpdated;
 
@@ -54,7 +56,9 @@ export const buildRates = (
         rest.hourPrice *
         workParams.rates.extraSundayNight
     ),
-    auxiliaryTrasport: hasHour ? 0 : settings.auxiliaryTrasport,
+    // Explicit 0 so an auxiliaryTrasport sent in the request body cannot survive
+    // the `...rest` spread above.
+    auxiliaryTrasport: 0,
     total: roundToThousands(
       rest.hourPrice *
         (getTotalDays.ordinaryDayHours +
@@ -65,8 +69,7 @@ export const buildRates = (
           getTotalDays.sundayNightHours * workParams.rates.sundayNight +
           getTotalDays.extraSundayDayHours * workParams.rates.extraSundayDay +
           getTotalDays.extraSundayNightHours *
-            workParams.rates.extraSundayNight) +
-        settings.auxiliaryTrasport
+            workParams.rates.extraSundayNight)
     ),
   };
 };

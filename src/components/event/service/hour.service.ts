@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 import { Hour, IHour } from "../model/hour.model";
 import { Employee } from "../../employee/model/employee.model";
+import { getSetting } from "../../setting/service/setting.service";
+import {
+  bogotaDaysToInstantRange,
+  computeEmployeeAllowance,
+  daysTouchedByRecords,
+} from "../../../util/transport-allowance.util";
 
 const createHour = async (hour: IHour) => {
   return await Hour.create(hour);
@@ -153,10 +159,105 @@ const deleteHourByEventId = async (eventId: string) => {
   return await Hour.deleteMany({ eventId });
 };
 
+/**
+ * Every record of this employee overlapping `days`, in ANY event. Queried by
+ * overlap rather than by `startTime` falling in the window, so a shift that starts
+ * the previous evening and crosses midnight is still counted.
+ */
+const findEmployeeRecordsOnDays = async (
+  employeeId: mongoose.Types.ObjectId | string,
+  days: string[]
+) => {
+  const range = bogotaDaysToInstantRange(days);
+  if (!range) return [];
+
+  return await Hour.find({
+    employeeId,
+    startTime: { $lt: range.to },
+    $or: [{ endTime: null }, { endTime: { $gt: range.from } }],
+  }).lean();
+};
+
+/** Total transport allowance this event owes, across all of its employees. */
+const getEventTransportAllowance = async (eventId: string) => {
+  const settings = await getSetting();
+  const auxPerDay = (settings as any)?.auxiliaryTrasport ?? 0;
+  if (!auxPerDay) return 0;
+
+  const eventHours = await Hour.find({
+    eventId: new mongoose.Types.ObjectId(eventId),
+  }).lean();
+
+  const byEmployee = new Map<string, any[]>();
+  for (const record of eventHours) {
+    const key = String(record.employeeId ?? "");
+    if (!key) continue;
+
+    const list = byEmployee.get(key) ?? [];
+    list.push(record);
+    byEmployee.set(key, list);
+  }
+
+  let total = 0;
+
+  for (const [employeeId, recordsThisEvent] of byEmployee) {
+    const recordsOnThoseDays = await findEmployeeRecordsOnDays(
+      employeeId,
+      daysTouchedByRecords(recordsThisEvent)
+    );
+
+    total += computeEmployeeAllowance(
+      recordsThisEvent,
+      recordsOnThoseDays.length ? recordsOnThoseDays : recordsThisEvent,
+      auxPerDay,
+      eventId
+    ).transportAllowance;
+  }
+
+  return total;
+};
+
+/**
+ * Adds each employee's transport allowance to an event roll-up.
+ *
+ * Done in JS rather than inside the pipeline on purpose: the rule needs every event
+ * the employee worked those days, so expressing it as a cross-event $lookup with
+ * per-day ownership would be unreadable, and there are no tests here to back it up.
+ */
+const attachTransportAllowance = async (employees: any[], eventId: string) => {
+  const settings = await getSetting();
+  const auxPerDay = (settings as any)?.auxiliaryTrasport ?? 0;
+
+  for (const employee of employees) {
+    const recordsThisEvent = employee.hours ?? [];
+
+    const found = await findEmployeeRecordsOnDays(
+      employee.employeeId,
+      daysTouchedByRecords(recordsThisEvent)
+    );
+    const recordsOnThoseDays = found.length ? found : recordsThisEvent;
+
+    const allowance = computeEmployeeAllowance(
+      recordsThisEvent,
+      recordsOnThoseDays,
+      auxPerDay,
+      eventId
+    );
+
+    employee.transportDays = allowance.transportDays;
+    employee.transportAllowance = allowance.transportAllowance;
+    employee.legacyTransportDays = allowance.legacyDays;
+    employee.grandTotal =
+      (employee.grandTotal ?? 0) + allowance.transportAllowance;
+  }
+
+  return employees;
+};
+
 async function getEmployeeWithRecords(eventId: string) {
   const id = new mongoose.Types.ObjectId(eventId);
 
-  return await Hour.aggregate([
+  const employees = await Hour.aggregate([
     // Empleados con horas
     {
       $match: { eventId: id },
@@ -258,6 +359,10 @@ async function getEmployeeWithRecords(eventId: string) {
     },
   ]);
 
+  // El auxilio de transporte se paga una vez por empleado por día, así que se
+  // resuelve aquí y se suma al grandTotal. totalHours queda como costo de horas.
+  return await attachTransportAllowance(employees, eventId);
+
   /*   const result = await Hour.aggregate([
     { $match: { eventId: objectId } },
 
@@ -309,6 +414,7 @@ export {
   deleteHour,
   deleteHourByEventId,
   getEmployeeWithRecords,
+  getEventTransportAllowance,
   setHourApproval,
   getEmployeeEventsByCc,
   findOverlappingHour,
